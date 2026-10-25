@@ -59,9 +59,16 @@
                     </a>
 
                     <a href="{{ route('cart.index') }}"
-                       class="text-sm font-medium text-gray-700 hover:text-blue-600">
-                        My Cart
-                    </a>
+   class="block rounded-lg px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100">
+
+    My Cart
+
+    <span id="cartCount"
+          class="ml-2 rounded-full bg-blue-600 px-2 py-1 text-xs text-white">
+        {{ auth()->user()?->cart?->items()->sum('quantity') ?? 0 }}
+    </span>
+
+</a>
 
 
                     {{-- Buyer: Apply as Seller --}}
