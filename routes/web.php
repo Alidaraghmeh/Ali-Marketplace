@@ -17,6 +17,7 @@ use App\Http\Controllers\Seller\ProductController;
 use App\Http\Controllers\Seller\StoreController;
 use App\Http\Controllers\SellerRequestController;
 use App\Http\Controllers\SellerReturnRequestController;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Route;
@@ -172,3 +173,30 @@ Route::patch('orders/{sellerOrder}/confirm-payment',[SellerOrderController::clas
     Route::get('admin/dashboard',[DashboardController::class,'index'])
     ->name('admin.dashboard')
     ->middleware(['auth','can:view-admin-dashboard']);
+
+
+
+    Route::view('/ajax-demo','ajax-demo');
+
+    Route::get('/ajax-demo/product',function(){
+       
+      return response()->json([
+        'name'=>'iPone 16',
+        'price'=>500
+      ]      
+      );
+    });
+
+
+Route::post('/ajax-demo/quantity', function (Request $request) {
+
+    $data = $request->validate([
+        'quantity' => 'required|integer|min:1',
+    ]);
+
+    return response()->json([
+        'message' => 'تم استقبال الكمية',
+        'quantity' => $data['quantity'],
+    ]);
+
+})->name('ajax.quantity');

@@ -249,31 +249,29 @@
                             View Details
                         </a>
 
-                        <form action="{{ route('cart.items.store') }}"
-                              method="POST">
+                   <form action="{{ route('cart.items.store') }}"
+      method="POST"
+      class="ajax-add-to-cart">
 
-                            @csrf
+    @csrf
 
-                            <input
-                                type="hidden"
-                                name="product_id"
-                                value="{{ $product->id }}"
-                            >
+    <input type="hidden"
+           name="product_id"
+           value="{{ $product->id }}">
 
-                            <input
-                                type="hidden"
-                                name="quantity"
-                                value="1"
-                            >
+    <input type="hidden"
+           name="quantity"
+           value="1">
 
-                            <button
-                                type="submit"
-                                @disabled($product->stock_quantity <= 0)
-                                class="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400">
-                                Add to Cart
-                            </button>
+    <button type="submit"
+            @disabled($product->stock_quantity <= 0)
+            class="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400">
+        Add to Cart
+    </button>
 
-                        </form>
+    <p class="cart-message" aria-live="polite"></p>
+
+</form>
 
                     </div>
 
@@ -317,3 +315,60 @@
 </section>
 
 @endsection
+<script>
+document.addEventListener('submit', async function(event) {
+
+    const form = event.target;
+
+    if (!form.matches('.ajax-add-to-cart')) {
+        return;
+    }
+
+    event.preventDefault();
+
+    const message = form.querySelector('.cart-message');
+    const button = form.querySelector('button[type="submit"]');
+
+    const formData = new FormData(form);
+
+    button.disabled = true;
+    message.textContent = '';
+
+    try {
+
+        const response = await fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json'
+            },
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            message.textContent = data.message;
+            return;
+        }
+
+        message.textContent = data.message;
+
+        const cartCount = document.getElementById('cartCount');
+
+        if (cartCount) {
+            cartCount.textContent = data.cart_count;
+        }
+
+    } catch(error) {
+
+        console.error(error);
+        message.textContent = 'تعذر إكمال الطلب';
+
+    } finally {
+
+        button.disabled = false;
+
+    }
+
+});
+</script>

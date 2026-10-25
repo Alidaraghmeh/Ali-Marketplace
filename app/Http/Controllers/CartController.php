@@ -94,6 +94,16 @@ throw ValidationException::withMessages([
      });
  
 
+if ($request->expectsJson()) {
+
+    $cartCount = $cart->items()->sum('quantity');
+
+    return response()->json([
+        'message' => 'Product added to cart successfully!',
+        'cart_count' => $cartCount
+    ]);
+}
+
 return redirect()
     ->route('products.index')
     ->with('success', 'Product added to cart successfully!');
